@@ -1,0 +1,166 @@
+// async function getMyJobs(req, res) {
+//   try {
+//     const userId = req.params.userId;
+
+//     const jobs = await Job.aggregate([
+//       {
+//         $match: { userId: new mongoose.Types.ObjectId(userId) },
+//       },
+//       {
+//         $lookup: {
+//           from: "users",
+//           localField: "userId",
+//           foreignField: "_id",
+//           as: "result",
+//         },
+//       },
+//       {
+//         $addFields: { employeer: { $first: "$result" } },
+//       },
+//       {
+//         $project: {
+//           result: 0,
+//           "employeer.password": 0,
+//           "employeer.accessToken": 0,
+//           "employeer.refreshToken": 0,
+//           "employeer.createdAt": 0,
+//           "employeer.updatedAt": 0,
+//           "employeer.__v": 0,
+//           "employeer.profileImg": 0,
+//           "employeer.email": 0,
+//           "employeer.status": 0,
+//         },
+//       },
+//       {
+//         $lookup: {
+//           from: "jobseekers",
+//           localField: "_id",
+//           foreignField: "jobId",
+//           as: "seekers",
+//         },
+//       },
+//       {
+//         $unwind: {
+//           path: "$seekers",
+//           preserveNullAndEmptyArrays: true,
+//         },
+//       },
+//       {
+//         $lookup: {
+//           from: "users",
+//           localField: "seekers.userId",
+//           foreignField: "_id",
+//           as: "userDetails",
+//         },
+//       },
+//       {
+//         $addFields: {
+//           "seekers.userName": { $arrayElemAt: ["$userDetails.name", 0] },
+//           "seekers.email": { $arrayElemAt: ["$userDetails.email", 0] },
+//           "seekers.address": { $arrayElemAt: ["$userDetails.address", 0] },
+//           "seekers.districtId": {
+//             $arrayElemAt: ["$userDetails.districtId", 0],
+//           },
+//           "seekers.districtName": {
+//             $arrayElemAt: ["$userDetails.districtName", 0],
+//           },
+//           "seekers.phoneNumber": {
+//             $arrayElemAt: ["$userDetails.phoneNumber", 0],
+//           },
+//           "seekers.pinCode": { $arrayElemAt: ["$userDetails.pinCode", 0] },
+//           "seekers.place": { $arrayElemAt: ["$userDetails.place", 0] },
+//           "seekers.stateId": { $arrayElemAt: ["$userDetails.stateId", 0] },
+//           "seekers.stateName": {
+//             $arrayElemAt: ["$userDetails.stateName", 0],
+//           },
+//           "seekers.talukId": {
+//             $arrayElemAt: ["$userDetails.talukId", 0],
+//           },
+//           "seekers.talukName": {
+//             $arrayElemAt: ["$userDetails.talukName", 0],
+//           },
+//           "seekers.gender": {
+//             $arrayElemAt: ["$userDetails.gender", 0],
+//           },
+//         },
+//       },
+//       {
+//         $group: {
+//           _id: "$_id",
+//           cropName: { $first: "$cropName" },
+//           cropId: { $first: "$cropId" },
+//           farmName: { $first: "$farmName" },
+//           availMale: { $first: "$maleCount" },
+//           availFemale: { $first: "$femaleCount" },
+//           farmId: { $first: "$farmId" },
+//           image: { $first: "$image" },
+//           status: { $first: "$status" },
+//           distance: { $first: "$distance" },
+//           maleCount: { $first: "$maleCount" },
+//           femaleCount: { $first: "$femaleCount" },
+//           maleSalary: { $first: "$maleSalary" },
+//           femaleSalary: { $first: "$femaleSalary" },
+//           extra: { $first: "$extra" },
+//           fromDate: { $first: "$fromDate" },
+//           toDate: { $first: "$toDate" },
+//           duration: { $first: "$duration" },
+//           employeer: { $first: "$employeer" },
+//           createdAt: { $first: "$createdAt" },
+//           updatedAt: { $first: "$updatedAt" },
+//           jobSeekers: { $push: "$seekers" },
+//           otherFacilities: { $first: "$otherFacilities" },
+//           jobDescription: { $first: "$jobDescription" },
+//         },
+//       },
+//       {
+//         $project: {
+//           userDetails: 0,
+//         },
+//       },
+//       {
+//         $addFields: {
+//           maleSeekers: {
+//             $filter: {
+//               input: "$jobSeekers",
+//               as: "seeker",
+//               cond: { $and: [{ $eq: ["$$seeker.gender", 0] }, { $eq: ["$$seeker.jobStatus", 2] }] },
+//             },
+//           },
+//           femaleSeekers: {
+//             $filter: {
+//               input: "$jobSeekers",
+//               as: "seeker",
+//               cond: { $and: [{ $eq: ["$$seeker.gender", 1] }, { $eq: ["$$seeker.jobStatus", 2] }] },
+//             },
+//           },
+//         },
+//       },
+//       {
+//         $addFields: {
+//           availMale: { $subtract: ["$availMale", { $size: "$maleSeekers" }] },
+//           availFemale: { $subtract: ["$availFemale", { $size: "$femaleSeekers" }] },
+//           jobSeekers: {
+//             $filter: {
+//               input: "$jobSeekers",
+//               as: "seeker",
+//               cond: { $gt: [{ $strLenCP: { $reduce: { input: { $objectToArray: "$$seeker" }, initialValue: "", in: { $concat: ["$$value", "$$this.k"] } } }, 0] },
+//             },
+//           },
+//         },
+//       },
+//       {
+//         $project: {
+//           maleSeekers: 0,
+//           femaleSeekers: 0,
+//         },
+//       },
+//       {
+//         $sort: { updatedAt: -1 },
+//       },
+//     ]);
+
+//     res.status(200).json(jobs);
+//   } catch (err) {
+//     res.status(500).json({ message: "Server Error", error: err.message });
+//   }
+// }
